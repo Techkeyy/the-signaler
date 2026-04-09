@@ -443,12 +443,11 @@ function initTabs() {
 }
 
 function updateCountdowns() {
-  const now = Date.now();
   document.querySelectorAll(".signal-card").forEach((card) => {
     const dropId = card.dataset.dropId;
     const drop = signalsById.get(dropId);
     if (!drop) return;
-    applyCardState(card, drop, now);
+    applyCardState(card, drop, Date.now());
   });
 }
 
@@ -757,6 +756,9 @@ async function acquireWithFreighter(dropId, price) {
     const requiredAmount = challengeData.amount || '0.10';
 
     if (!sellerWallet) throw new Error('No seller wallet in payment challenge');
+    if (!sellerWallet || sellerWallet === 'GTESTSELLERWALLET123' || !sellerWallet.startsWith('G') || sellerWallet.length !== 56) {
+      throw new Error('Invalid seller wallet address received from server: ' + sellerWallet);
+    }
 
     console.log('[Payment] Seller wallet:', sellerWallet);
     console.log('[Payment] Required amount:', requiredAmount, 'XLM');

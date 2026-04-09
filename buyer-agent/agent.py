@@ -10,7 +10,7 @@ load_dotenv()
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:4000")
 TARGET_TAGS = [tag.strip() for tag in os.getenv("TARGET_TAGS", "trading_signal,logistics_alert").split(",") if tag.strip()]
-SCAN_INTERVAL = int(os.getenv("SCAN_INTERVAL", "8"))
+SCAN_INTERVAL = int(os.getenv("SCAN_INTERVAL", "45"))
 MIN_SECONDS_REMAINING = int(os.getenv("MIN_SECONDS_REMAINING", "10"))
 
 
@@ -55,7 +55,7 @@ def filter_viable_drops(drops: list[dict], acquired_ids: set[str]) -> list[dict]
         if drop_id in acquired_ids:
             continue
         viable.append(drop)
-    return viable
+    return viable[:1]
 
 
 async def run_agent() -> None:
@@ -78,35 +78,33 @@ async def run_agent() -> None:
                     await asyncio.sleep(SCAN_INTERVAL)
                     continue
 
-                for drop in viable_drops:
-                    drop_id = drop.get("id", "")
-                    short_id = drop_id[:8]
-                    tag = drop.get("tag", "unknown")
-                    price = drop.get("price", "0.00")
-                    expires_at = drop.get("expiresAt", "unknown")
-                    seconds_remaining = int(drop.get("secondsRemaining", 0))
+                drop = viable_drops[0]
+                drop_id = drop.get("id", "")
+                short_id = drop_id[:8]
+                tag = drop.get("tag", "unknown")
+                price = drop.get("price", "0.00")
+                expires_at = drop.get("expiresAt", "unknown")
+                seconds_remaining = int(drop.get("secondsRemaining", 0))
 
-                    print("[AGENT] → Signal detected")
-                    print(f"  ID      : {short_id}")
-                    print(f"  TAG     : {tag}")
-                    print(f"  PRICE   : {price} USDC")
-                    print(f"  EXPIRES : {expires_at}")
-                    print(f"  TTL LEFT: {seconds_remaining}s")
+                print("[AGENT] → Signal detected")
+                print(f"  ID      : {short_id}")
+                print(f"  TAG     : {tag}")
+                print(f"  PRICE   : {price} USDC")
+                print(f"  EXPIRES : {expires_at}")
+                print(f"  TTL LEFT: {seconds_remaining}s")
 
-                    result = await acquire_drop(drop_id, price)
-                    if result:
-                        payload = result.get("payload", "")
-                        acquired_ids.add(drop_id)
-                        total_acquired += 1
-                        print("[AGENT] ✓ Signal acquired")
-                        print(f"  DROP ID : {short_id}")
-                        print(f"  PAYLOAD : {payload}")
-                        print("  ACTION  : Executing signal...")
-                        print()
-                    else:
-                        print("[AGENT] ✗ Acquisition failed. Moving on.")
-
-                    break
+                result = await acquire_drop(drop_id, price)
+                if result:
+                    payload = result.get("payload", "")
+                    acquired_ids.add(drop_id)
+                    total_acquired += 1
+                    print("[AGENT] ✓ Signal acquired")
+                    print(f"  DROP ID : {short_id}")
+                    print(f"  PAYLOAD : {payload}")
+                    print("  ACTION  : Executing signal...")
+                    print()
+                else:
+                    print("[AGENT] ✗ Acquisition failed. Moving on.")
 
                 await asyncio.sleep(SCAN_INTERVAL)
     finally:

@@ -53,9 +53,6 @@ async def fetch_coingecko_signals() -> list[dict[str, Any]]:
             change = float(coin_data.get("usd_24h_change", 0) or 0)
             abs_change = abs(change)
 
-            if abs_change < 0.5:
-                continue
-
             if abs_change > 5:
                 severity = "CRITICAL"
                 price = "0.25"
@@ -140,7 +137,7 @@ async def run_seller() -> None:
         async with httpx.AsyncClient(timeout=10.0) as client:
             while True:
                 # Refresh live signals from CoinGecko every 3rd iteration
-                if index % 3 == 0:
+                if index % 2 == 0:
                     live_signals = await fetch_coingecko_signals()
 
                 if live_signals:
