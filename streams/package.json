@@ -1,0 +1,13 @@
+{
+  "name": "mpp-feed",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The Signaler MPP streaming payment feed demo",
+  "main": "mpp-feed.js",
+  "scripts": {
+    "start": "node mpp-feed.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
