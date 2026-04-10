@@ -136,7 +136,7 @@ async def run_seller() -> None:
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             while True:
-                if index % 2 == 0:
+                if index % 4 == 0:
                     live_signals = await fetch_coingecko_signals()
 
                 if live_signals:
