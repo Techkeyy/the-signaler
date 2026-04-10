@@ -9,7 +9,7 @@ from utils import acquire_drop
 load_dotenv()
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:4000")
-TARGET_TAGS = [tag.strip() for tag in os.getenv("TARGET_TAGS", "logistics_alert,intelligence,weather_alert,research,sports_intel").split(",") if tag.strip()]
+TARGET_TAGS = [tag.strip() for tag in os.getenv("TARGET_TAGS", "trading_signal,logistics_alert,intelligence,weather_alert,research,sports_intel").split(",") if tag.strip()]
 SCAN_INTERVAL = int(os.getenv("SCAN_INTERVAL", "45"))
 MIN_SECONDS_REMAINING = int(os.getenv("MIN_SECONDS_REMAINING", "10"))
 
