@@ -1,4 +1,4 @@
-  # The Signaler ⚡
+# The Signaler ⚡
 
 > Autonomous Signal Acquisition Network. Agents and humans race to acquire time-sensitive encrypted intelligence signals. Payments via x402-inspired protocol on Stellar. No accounts. No API keys. Just a wallet and XLM.
 
@@ -100,6 +100,7 @@ tx.sign(keypair)
 result = server.submit_transaction(tx)
 tx_hash = result["hash"]
 Architecture
+```text
 ┌────────────────────┐     POST /drop      ┌─────────────────────┐
 │  Seller Agent      │ ──────────────────► │  Express Backend    │
 │  (Python/Railway)  │  CoinGecko signals  │  (Railway)          │
@@ -116,8 +117,22 @@ Architecture
 │  Stellar Testnet   │ ◄───── XLM ──────── │  Seller Wallet      │
 │  Explorer          │                     │  GB3SJNU4...        │
 └────────────────────┘                     └─────────────────────┘
+```
 Tech Stack
-ComponentTechnologyBackendNode.js + ExpressDatabaseSQLite (better-sqlite3)Payment Protocolx402-inspired on StellarBlockchainStellar TestnetSmart PaymentsStellar Horizon APIEncryptionAES-256-GCMLive DataCoinGecko APISeller AgentPython + httpxBuyer AgentPython + stellar-sdk + Gemini AIFrontendVanilla HTML/CSS/JSWalletFreighter browser walletHostingRailway
+| Component | Technology |
+|-----------|------------|
+| Backend | Node.js + Express |
+| Database | SQLite (better-sqlite3) |
+| Payment Protocol | x402-inspired on Stellar |
+| Blockchain | Stellar Testnet |
+| Smart Payments | Stellar Horizon API |
+| Encryption | AES-256-GCM |
+| Live Data | CoinGecko API |
+| Seller Agent | Python + httpx |
+| Buyer Agent | Python + stellar-sdk + Gemini AI |
+| Frontend | Vanilla HTML/CSS/JS |
+| Wallet | Freighter browser wallet |
+| Hosting | Railway |
 Stellar Integration
 
 x402-inspired protocol for every signal acquisition
@@ -155,9 +170,18 @@ set BACKEND_URL=http://localhost:4000
 python agent.py
 Environment Variables
 Backend
-VariableDescriptionENCRYPTION_KEY64-char hex key for AES-256-GCMSELLER_PUBLIC_KEYStellar public key receiving paymentsSELLER_SECRET_KEYStellar secret key for on-chain proof txFACILITATOR_URLx402 facilitator endpoint
+| Variable | Description |
+|----------|-------------|
+| `ENCRYPTION_KEY` | 64-char hex key for AES-256-GCM |
+| `SELLER_PUBLIC_KEY` | Stellar public key receiving payments |
+| `SELLER_SECRET_KEY` | Stellar secret key for on-chain proof tx |
+| `FACILITATOR_URL` | x402 facilitator endpoint |
 Buyer Agent
-VariableDescriptionAGENT_SECRET_KEYStellar secret key for signing paymentsBACKEND_URLBackend URLGEMINI_API_KEYOptional — enables AI signal ranking
+| Variable | Description |
+|----------|-------------|
+| `AGENT_SECRET_KEY` | Stellar secret key for signing payments |
+| `BACKEND_URL` | Backend URL |
+| `GEMINI_API_KEY` | Optional — enables AI signal ranking |
 What Is Working
 
 Real Stellar testnet XLM payments per acquisition
