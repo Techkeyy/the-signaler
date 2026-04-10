@@ -140,7 +140,7 @@ async def run_seller() -> None:
                     live_signals = await fetch_coingecko_signals()
 
                 if live_signals:
-                    signal = live_signals[index % len(live_signals)]
+                    signal = live_signals.pop(0)
                     print("[SELLER] Using live CoinGecko signal")
                 else:
                     signal = SIGNALS[index % len(SIGNALS)]
