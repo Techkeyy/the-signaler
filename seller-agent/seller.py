@@ -12,7 +12,7 @@ load_dotenv()
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:4000")
 SELLER_WALLET = os.getenv("SELLER_WALLET", "GTESTSELLERWALLET123")
-POST_INTERVAL = int(os.getenv("POST_INTERVAL", "20"))
+POST_INTERVAL = int(os.getenv("POST_INTERVAL", "15"))
 DEFAULT_TTL = int(os.getenv("DEFAULT_TTL", "120"))
 DEFAULT_PRICE = os.getenv("DEFAULT_PRICE", "0.10")
 
@@ -52,6 +52,9 @@ async def fetch_coingecko_signals() -> list[dict[str, Any]]:
             current_price = float(coin_data.get("usd", 0) or 0)
             change = float(coin_data.get("usd_24h_change", 0) or 0)
             abs_change = abs(change)
+
+            if abs_change < 0.5:
+                continue
 
             if abs_change > 5:
                 severity = "CRITICAL"
@@ -136,26 +139,27 @@ async def run_seller() -> None:
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             while True:
-                if index % 4 == 0:
+                # Refresh live signals from CoinGecko every 3rd iteration
+                if index % 3 == 0:
                     live_signals = await fetch_coingecko_signals()
 
                 if live_signals:
-                    signal = live_signals.pop(0)
+                    signal = live_signals[index % len(live_signals)]
                     print("[SELLER] Using live CoinGecko signal")
                 else:
                     signal = SIGNALS[index % len(SIGNALS)]
                     print("[SELLER] Using cached signal")
 
                 active_count = await get_active_signal_count(client)
-                if cap_paused and active_count < 12:
+                if cap_paused and active_count < 10:
                     cap_paused = False
-                    print(f"[SELLER] Active signals below resume threshold ({active_count}/12). Resuming posts.")
+                    print(f"[SELLER] Active signals below resume threshold ({active_count}/10). Resuming posts.")
 
-                if not cap_paused and active_count >= 20:
+                if not cap_paused and active_count >= 15:
                     cap_paused = True
 
                 if cap_paused:
-                    print(f"[SELLER] Signal cap reached ({active_count}/20). Waiting...")
+                    print(f"[SELLER] Signal cap reached ({active_count}/15). Waiting...")
                     await asyncio.sleep(POST_INTERVAL)
                     continue
 
