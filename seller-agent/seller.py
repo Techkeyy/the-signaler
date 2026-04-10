@@ -12,7 +12,7 @@ load_dotenv()
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:4000")
 SELLER_WALLET = os.getenv("SELLER_WALLET", "GTESTSELLERWALLET123")
-POST_INTERVAL = int(os.getenv("POST_INTERVAL", "15"))
+POST_INTERVAL = int(os.getenv("POST_INTERVAL", "20"))
 DEFAULT_TTL = int(os.getenv("DEFAULT_TTL", "120"))
 DEFAULT_PRICE = os.getenv("DEFAULT_PRICE", "0.10")
 
@@ -136,7 +136,6 @@ async def run_seller() -> None:
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             while True:
-                # Refresh live signals from CoinGecko every 3rd iteration
                 if index % 2 == 0:
                     live_signals = await fetch_coingecko_signals()
 
@@ -148,15 +147,15 @@ async def run_seller() -> None:
                     print("[SELLER] Using cached signal")
 
                 active_count = await get_active_signal_count(client)
-                if cap_paused and active_count < 10:
+                if cap_paused and active_count < 12:
                     cap_paused = False
-                    print(f"[SELLER] Active signals below resume threshold ({active_count}/10). Resuming posts.")
+                    print(f"[SELLER] Active signals below resume threshold ({active_count}/12). Resuming posts.")
 
-                if not cap_paused and active_count >= 15:
+                if not cap_paused and active_count >= 20:
                     cap_paused = True
 
                 if cap_paused:
-                    print(f"[SELLER] Signal cap reached ({active_count}/15). Waiting...")
+                    print(f"[SELLER] Signal cap reached ({active_count}/20). Waiting...")
                     await asyncio.sleep(POST_INTERVAL)
                     continue
 
