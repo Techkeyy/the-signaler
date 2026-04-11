@@ -6,7 +6,7 @@
 https://the-signaler-production.up.railway.app
 
 ## 🎥 Demo Video
-[Link to demo video]
+https://youtu.be/McDffONQavk?si=IKPYhq10Hpu1oNkp
 
 ## What Is The Signaler?
 
